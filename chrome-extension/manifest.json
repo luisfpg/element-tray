@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Element Tray Notifier",
+  "version": "1.0",
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.element.io/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Element Tray Notifier"
+  }
+}
