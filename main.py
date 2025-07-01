@@ -51,22 +51,58 @@ class RequestHandler(BaseHTTPRequestHandler):
     tray_ref = None  # static reference to tray icon
 
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length).decode()
+        """Handle POST requests (to update the tray icon)"""
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 0:
+                post_data = self.rfile.read(content_length).decode()
+            else:
+                post_data = ""
 
-        if post_data == "alert":
-            RequestHandler.tray_ref.alert()
-        elif post_data == "reset":
-            RequestHandler.tray_ref.reset()
+            if post_data == "alert":
+                RequestHandler.tray_ref.alert()
+            elif post_data == "reset":
+                RequestHandler.tray_ref.reset()
 
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b'OK')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Content-Length', '2')
+            self.send_header('Connection', 'close')
+            self.end_headers()
+            self.wfile.write(b'OK')
+        except (BrokenPipeError, ConnectionResetError):
+            # Client disconnected, ignore the error
+            pass
+        except Exception as e:
+            # Log other errors but don't crash
+            print(f"Error handling POST request: {e}")
 
     def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b'OK')
+        """Handle GET requests (basically the one to open the browser in the Element tab)"""
+        try:
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Content-Length', '2')
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.send_header('Connection', 'close')
+            self.end_headers()
+            self.wfile.write(b'OK')
+        except (BrokenPipeError, ConnectionResetError):
+            # Client disconnected, ignore the error
+            pass
+        except Exception as e:
+            # Log other errors but don't crash
+            print(f"Error handling GET request: {e}")
+
+    def do_OPTIONS(self):
+        """Handle OPTIONS requests (for CORS preflight)"""
+        try:
+            self.send_response(200)
+            self.send_header('Allow', 'GET, POST, OPTIONS')
+            self.send_header('Connection', 'close')
+            self.end_headers()
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def log_message(self, format, *args):
         return  # suppress logging
