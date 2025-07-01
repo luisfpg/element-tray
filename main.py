@@ -10,7 +10,7 @@ import threading
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ICON_DEFAULT = os.path.join(SCRIPT_DIR, "icon.png")
 ICON_ALERT = os.path.join(SCRIPT_DIR, "icon_alert.png")
-CHROME_PROFILE = 'Profile 7'
+CHROME_PROFILE = os.getenv('CHROME_PROFILE')
 PORT = 45678
 
 class NotifierTray(QtWidgets.QSystemTrayIcon):
@@ -40,7 +40,8 @@ class NotifierTray(QtWidgets.QSystemTrayIcon):
 
     def on_tray_icon_click(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
-            os.system(f"google-chrome-stable --profile-directory=\"{CHROME_PROFILE}\" http://localhost:{PORT}/open")
+            profile_part = f"--profile-directory=\"{CHROME_PROFILE}\"" if CHROME_PROFILE else ""
+            os.system(f"google-chrome-stable {profile_part} http://localhost:{PORT}/open")
 
     def quit(self):
         self.setVisible(False)
