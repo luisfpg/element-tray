@@ -13,7 +13,6 @@ function handleTitleChange(newTitle) {
   if (newTitle !== lastTitle) {
     const action = newTitle.includes("Element [") ? "alert" : "reset";
     if (lastAction !== action) {
-      console.log(`Title changed to: ${newTitle}, Action: ${action}`);
       notifyTray(action);
       lastAction = action;
     }
