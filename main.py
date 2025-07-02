@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import subprocess
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtWidgets import QSystemTrayIcon
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -40,8 +41,12 @@ class NotifierTray(QtWidgets.QSystemTrayIcon):
 
     def on_tray_icon_click(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
-            profile_part = f"--profile-directory=\"{CHROME_PROFILE}\"" if CHROME_PROFILE else ""
-            os.system(f"google-chrome-stable {profile_part} http://localhost:{PORT}/open")
+            profile_part = f"--profile-directory={CHROME_PROFILE}" if CHROME_PROFILE else ""
+            cmd = ["google-chrome-stable"]
+            if profile_part:
+                cmd.append(profile_part)
+            cmd.append(f"http://localhost:{PORT}/open")
+            subprocess.Popen(cmd, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def quit(self):
         self.setVisible(False)
