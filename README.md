@@ -1,6 +1,8 @@
 Element tray
 ============
 
+**NOTICE:** With the release of Element 1.12.0, screen sharing on Wayland works natively. As such, this project is no longer needed, and will be archived. This is the related issue: https://github.com/element-hq/element-desktop/issues/1750.
+
 [Element desktop](https://element.io/download) is great, but so far in Linux with Wayland, there has been problems with screen sharing with the underlying Electron platform.
 
 As a workaround, it is possible to use the [Element web](https://app.element.io/) in Chrome, where screen sharing works flawlessly. However, when doing so, the system tray icon to indicate new messages is lost.
