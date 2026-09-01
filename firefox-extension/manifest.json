@@ -2,10 +2,15 @@
   "manifest_version": 3,
   "name": "Element Tray Notifier",
   "version": "1.4",
-  "permissions": ["scripting", "tabs"],
-  "host_permissions": ["<all_urls>"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "element-tray-notifier@localhost"
+    }
+  },
+  "permissions": ["tabs"],
+  "host_permissions": ["http://127.0.0.1:45678/*"],
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
@@ -13,8 +18,5 @@
       "js": ["content.js"],
       "run_at": "document_idle"
     }
-  ],
-  "action": {
-    "default_title": "Element Tray Notifier"
-  }
+  ]
 }

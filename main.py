@@ -11,7 +11,9 @@ import threading
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ICON_DEFAULT = os.path.join(SCRIPT_DIR, "icon.png")
 ICON_ALERT = os.path.join(SCRIPT_DIR, "icon_alert.png")
+BROWSER = os.getenv('BROWSER', 'google-chrome-stable')
 CHROME_PROFILE = os.getenv('CHROME_PROFILE')
+FIREFOX_PROFILE = os.getenv('FIREFOX_PROFILE')
 PORT = 45678
 
 class NotifierTray(QtWidgets.QSystemTrayIcon):
@@ -41,10 +43,13 @@ class NotifierTray(QtWidgets.QSystemTrayIcon):
 
     def on_tray_icon_click(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
-            profile_part = f"--profile-directory={CHROME_PROFILE}" if CHROME_PROFILE else ""
-            cmd = ["google-chrome-stable"]
-            if profile_part:
-                cmd.append(profile_part)
+            cmd = [BROWSER]
+            if BROWSER == 'google-chrome-stable':
+                if CHROME_PROFILE:
+                    cmd.append(f"--profile-directory={CHROME_PROFILE}")
+            else:
+                if FIREFOX_PROFILE:
+                    cmd += ["-P", FIREFOX_PROFILE]
             cmd.append(f"http://localhost:{PORT}/open")
             subprocess.Popen(cmd, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -83,7 +88,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             print(f"Error handling POST request: {e}")
 
     def do_GET(self):
-        """Handle GET requests (basically the one to open the browser in the Element tab)"""
+        """Handle GET requests (the browser opens /open on tray click; the extension intercepts it)"""
         try:
             self.send_response(200)
             self.send_header('Content-Type', 'text/plain')

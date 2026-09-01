@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+web-ext-artifacts/
+firefox-extension/.amo-upload-uuid
